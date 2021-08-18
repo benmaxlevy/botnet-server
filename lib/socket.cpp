@@ -16,7 +16,9 @@
  * =====================================================================================
  */
 
-#include <cstdio>
+#include <iostream>
+#include <string>
+#include <sstream>
 #include <cstdlib>
 #include <unistd.h>
 #include <string.h>
@@ -24,6 +26,14 @@
 #include <sys/socket.h>
 #include <arpa/inet.h>
 #include <netinet/in.h>
+#include "socket.h"
+#include "types/status.h"
+#include "nlohmann/json.hpp"
+
+udp_socket::update_status(status client_status, struct sockaddr_in cliaddr)
+{
+
+}
 
 udp_socket::udp_socket(unsigned int port, unsigned int max_line)
 {
@@ -32,10 +42,10 @@ udp_socket::udp_socket(unsigned int port, unsigned int max_line)
 	struct sockaddr_in servaddr, cliaddr;
 	
 	//create socket file descriptor
-	if((sockfd = socket(AF_INET, SOCK_DGRAM, 0)) < 0 ) 
+	if((socketfd = socket(AF_INET, SOCK_DGRAM, 0)) < 0 ) 
 	{
-		perror("SOCKET UNABLE TO BE CREATED");
-		exit(EXIT_FAILURE);
+	    perror("SOCKET UNABLE TO BE CREATED");
+	    exit(EXIT_FAILURE);
 	}
 
 	//make sure that the server and client address sockaddr_in's are clear
@@ -47,20 +57,30 @@ udp_socket::udp_socket(unsigned int port, unsigned int max_line)
 	servaddr.sin_addr.s_addr = INADDR_ANY;
 	servaddr.sin_port = htons(port);
 
-	if(bind(sockfd, (const struct sockaddr*)&servaddr, sizeof(servaddr)) < 0)
+	if(bind(socketfd, (const struct sockaddr*)&servaddr, sizeof(servaddr)) < 0)
 	{
-		perror("SOCKET UNABLE TO BE BINDED TO ADDR");
-		exit(EXIT_FAILURE);
+	    perror("SOCKET UNABLE TO BE BINDED TO ADDR");
+	    exit(EXIT_FAILURE);
 	}
-
-	int len, n;
+	while(true)
+	{
+            int len, n;
 	
-	len = sizeof(cliaddr);
+       	    len = sizeof(cliaddr);
 
-	n = recvfrom(sockfd, (char*)buffer, max_line, MSG_WAITALL, (struct sockaddr*) &cliaddr, &len);
+	    n = recvfrom(socketfd, (char*)buffer, max_line, MSG_WAITALL, (struct sockaddr*) &cliaddr, (socklen_t*) &len);
 
-	buffer[n] = '\0';
-
-	//call status_update
-	//todo!
+	    buffer[n] = '\0';
+		printf("Client : %s\n", buffer);
+	
+		//call status_update
+		std::string buffer_str;
+		std::stringstream buffer_ss;
+		buffer_ss << buffer;
+		buffer_ss >> buffer_str;
+		auto json = nlohmann::json::parse(buffer_str);
+		//JSON structure: {"status": "value"}
+		status _status = json.at("status");
+		status_update(_status , cliaddr)
+	}
 }

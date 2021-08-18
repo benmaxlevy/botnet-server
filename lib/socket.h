@@ -19,7 +19,7 @@
 #ifndef SOCKET
 #define SOCKET
 
-#include <../types/status.h>
+#include "../types/status.h"
 #include <netinet/in.h>
 
 class udp_socket
@@ -29,6 +29,6 @@ class udp_socket
 	private:
 		// this function shall be used when a client passes a message; on initial contact, the new client'sdata shall be stored in a file.
 		int status_update(status client_status, struct sockaddr_in cliaddr);		
-}
+};
 
 #endif
