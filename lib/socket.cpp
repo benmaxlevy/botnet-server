@@ -27,13 +27,13 @@
 #include <arpa/inet.h>
 #include <netinet/in.h>
 #include "socket.h"
-#include "types/status.h"
+#include "../types/status.h"
 #include "nlohmann/json.hpp"
 
-udp_socket::update_status(status client_status, struct sockaddr_in cliaddr)
-{
+//udp_socket::update_status(status client_status, struct sockaddr_in cliaddr)
+//{
 
-}
+//}
 
 udp_socket::udp_socket(unsigned int port, unsigned int max_line)
 {
@@ -81,6 +81,6 @@ udp_socket::udp_socket(unsigned int port, unsigned int max_line)
 		auto json = nlohmann::json::parse(buffer_str);
 		//JSON structure: {"status": "value"}
 		status _status = json.at("status");
-		status_update(_status , cliaddr)
+//		status_update(_status , cliaddr);
 	}
 }

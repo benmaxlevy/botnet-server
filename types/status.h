@@ -15,5 +15,7 @@
  *
  * =====================================================================================
  */
-
+#ifndef TYPES_H
+#define TYPES_H
 enum status {ok, initial, recieved, execute, execute_w_error};
+#endif
